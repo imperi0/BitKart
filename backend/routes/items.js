@@ -304,6 +304,7 @@ router.post('/end-expired', async (req, res) => {
         
         let endedCount = 0;
         let paidCount = 0;
+        let shipmentCount = 0;
         
         for (const item of expiredItems) {
             endedCount++;
@@ -324,6 +325,20 @@ router.post('/end-expired', async (req, res) => {
                     [item.winning_bid, 'credit', `Item sold: ${item.title}`, item.seller_id, item.item_id, `SALE-${item.item_id}`]
                 );
                 
+                const [buyerInfo] = await connection.query(
+                    'SELECT address FROM users WHERE user_id = ?',
+                    [item.winner_id]
+                );
+                
+                const buyerAddress = buyerInfo[0]?.address || 'Address not provided';
+                
+                await connection.query(
+                    `INSERT INTO shipments (shipping_address, buyer_address, item_id, seller_id, buyer_id, status)
+                     VALUES (?, ?, ?, ?, ?, 'pending')`,
+                    [buyerAddress, buyerAddress, item.item_id, item.seller_id, item.winner_id]
+                );
+                
+                shipmentCount++;
                 paidCount++;
             } else {
                 await connection.query(
@@ -337,7 +352,7 @@ router.post('/end-expired', async (req, res) => {
         
         res.json({
             success: true,
-            message: `Processed ${endedCount} auctions, ${paidCount} with winning bids transferred`
+            message: `Processed ${endedCount} auctions, ${paidCount} paid to sellers, ${shipmentCount} shipments created`
         });
     } catch (err) {
         await connection.rollback();

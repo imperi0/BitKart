@@ -143,6 +143,7 @@ CREATE TABLE shipments (
     estimated_delivery DATE,
     actual_delivery DATE,
     shipping_address TEXT NOT NULL,
+    buyer_address TEXT,
     item_id INT NOT NULL,
     seller_id INT NOT NULL,
     buyer_id INT NOT NULL,
