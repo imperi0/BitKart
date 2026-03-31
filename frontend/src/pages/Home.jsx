@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { Clock, Gavel, DollarSign, TrendingUp } from 'lucide-react';
 import axios from 'axios';
 import ItemCard from '../components/ItemCard';
+import AuthContext from '../context/AuthContext';
 
 export default function Home() {
+  const { user } = useContext(AuthContext);
   const [featuredItems, setFeaturedItems] = useState([]);
   const [endingSoon, setEndingSoon] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -41,8 +43,8 @@ export default function Home() {
             <p className="text-lg text-primary-100 mb-8">
               Join thousands of buyers and sellers in the most trusted auction platform.
             </p>
-            <Link to="/register" className="inline-block bg-white text-primary-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
-              Start Bidding
+            <Link to={user ? "/dashboard" : "/register"} className="inline-block bg-white text-primary-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
+              {user ? "Go to Dashboard" : "Start Bidding"}
             </Link>
           </div>
         </div>
