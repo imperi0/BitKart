@@ -274,9 +274,15 @@ export default function Dashboard() {
                   <td className="px-6 py-4">${item.current_price}</td>
                   <td className="px-6 py-4">
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      item.is_winning ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                      item.status === 'sold' 
+                        ? (item.is_winning ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600')
+                        : item.status === 'expired'
+                        ? 'bg-amber-100 text-amber-700'
+                        : (item.is_winning ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700')
                     }`}>
-                      {item.is_winning ? 'Winning' : 'Outbid'}
+                      {item.status === 'sold' ? (item.is_winning ? 'Won' : 'Lost') : 
+                       item.status === 'expired' ? 'Expired' : 
+                       (item.is_winning ? 'Winning' : 'Outbid')}
                     </span>
                   </td>
                 </tr>

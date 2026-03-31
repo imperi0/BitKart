@@ -295,7 +295,7 @@ router.post('/end-expired', async (req, res) => {
         await connection.beginTransaction();
         
         const [expiredItems] = await connection.query(`
-            SELECT i.*, 
+            SELECT i.item_id, i.seller_id, i.title,
                    (SELECT user_id FROM bids WHERE item_id = i.item_id AND is_winning = TRUE ORDER BY bid_amount DESC LIMIT 1) as winner_id,
                    (SELECT MAX(bid_amount) FROM bids WHERE item_id = i.item_id) as winning_bid
             FROM items i
@@ -306,16 +306,12 @@ router.post('/end-expired', async (req, res) => {
         let paidCount = 0;
         
         for (const item of expiredItems) {
-            await connection.query(
-                'UPDATE items SET status = ? WHERE item_id = ?',
-                ['sold', item.item_id]
-            );
             endedCount++;
             
             if (item.winner_id && item.winning_bid) {
                 await connection.query(
-                    'UPDATE items SET winner_id = ? WHERE item_id = ?',
-                    [item.winner_id, item.item_id]
+                    'UPDATE items SET status = ?, winner_id = ? WHERE item_id = ?',
+                    ['sold', item.winner_id, item.item_id]
                 );
                 
                 await connection.query(
@@ -329,6 +325,11 @@ router.post('/end-expired', async (req, res) => {
                 );
                 
                 paidCount++;
+            } else {
+                await connection.query(
+                    'UPDATE items SET status = ? WHERE item_id = ?',
+                    ['expired', item.item_id]
+                );
             }
         }
         
