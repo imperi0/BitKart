@@ -108,7 +108,15 @@ router.get('/me', auth, async (req, res) => {
         
         res.json({
             success: true,
-            user: { ...users[0], balance: wallet[0]?.balance || 0 }
+            user: { 
+                id: users[0].user_id,
+                name: users[0].name,
+                email: users[0].email,
+                phone: users[0].phone,
+                address: users[0].address,
+                is_admin: users[0].is_admin,
+                balance: wallet[0]?.balance || 0
+            }
         });
     } catch (err) {
         console.error('Get user error:', err);
