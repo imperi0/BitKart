@@ -39,9 +39,9 @@ router.get('/', auth, async (req, res) => {
             for (let i = 0; i <= index; i++) {
                 const t = transactions[i];
                 if (t.txn_type === 'credit') {
-                    runningBalance -= parseFloat(t.amount);
-                } else {
                     runningBalance += parseFloat(t.amount);
+                } else {
+                    runningBalance -= parseFloat(t.amount);
                 }
             }
             return { ...txn, running_balance: runningBalance };
